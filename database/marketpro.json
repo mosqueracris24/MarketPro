@@ -1,0 +1,28 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"marketpro"},
+{"type":"table","name":"categorias","database":"marketpro","data":
+[
+{"id":"1","descripcion":"Productos de consumo alimenticio","nombre":"Alimentos"},
+{"id":"2","descripcion":"Productos de limpieza y aseo","nombre":"Aseo"},
+{"id":"3","descripcion":"Dispositivos y productos tecnológicos","nombre":"Tecnología"},
+{"id":"4","descripcion":"Bebidas y refrescos","nombre":"Bebidas"},
+{"id":"5","descripcion":"Artículos para el hogar","nombre":"Hogar"},
+{"id":"6","descripcion":null,"nombre":"Mascotas"}
+]
+}
+,{"type":"table","name":"productos","database":"marketpro","data":
+[
+{"fecha_vencimiento":"2027-12-20","precio_compra":"2300","precio_venta":"3700","stock":"120","categoria_id":"4","id":"1","nombre":"Pepsi Zero 400 ml","sku":"PEP001"}
+]
+}
+,{"type":"table","name":"usuario","database":"marketpro","data":
+[
+{"id":"1","username":"admin","email":"admin@marketpro.com","password":"$2a$10$R7McoG.4BUMmK7CjNqrebeXpM10Q2rT30Fky9PteG882L1R8lJz7C","role":"Administrador","is_active":"1","created_at":"2026-07-10 00:41:39"},
+{"id":"2","username":"anderson","email":"anderson1@marketpro.com","password":"$2a$10$R7McoG.4BUMmK7CjNqrebeXpM10Q2rT30Fky9PteG882L1R8lJz7C","role":"Bodega","is_active":"1","created_at":"2026-07-10 08:02:29"},
+{"id":"3","username":"cristian","email":"cristian@marketpro.com","password":"$2a$10$R7McoG.4BUMmK7CjNqrebeXpM10Q2rT30Fky9PteG882L1R8lJz7C","role":"Cajero","is_active":"1","created_at":"2026-07-10 08:03:57"},
+{"id":"4","username":"cristina","email":"cristina@marketpro.com","password":"$2a$10$R7McoG.4BUMmK7CjNqrebeXpM10Q2rT30Fky9PteG882L1R8lJz7C","role":"Administrador","is_active":"1","created_at":"2026-07-10 08:04:47"},
+{"id":"5","username":"bryan","email":"bryan@marketpro.com","password":"$2a$10$R7McoG.4BUMmK7CjNqrebeXpM10Q2rT30Fky9PteG882L1R8lJz7C","role":"Bodega","is_active":"1","created_at":"2026-07-10 08:05:34"}
+]
+}
+]
