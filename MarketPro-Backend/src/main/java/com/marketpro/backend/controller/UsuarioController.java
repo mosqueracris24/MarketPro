@@ -4,10 +4,12 @@ import com.marketpro.backend.model.Usuario;
 import com.marketpro.backend.repository.UsuarioRepository;
 import com.marketpro.backend.jdbc.UsuarioJdbcService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -42,28 +44,55 @@ public class UsuarioController {
         return usuarioRepository.save(usuario);
     }
 
+    private boolean esSuperusuarioProtegido(Usuario usuario) {
+        return usuario != null
+                && "admin".equalsIgnoreCase(usuario.getUsername())
+                && "Administrador".equals(usuario.getRole());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> actualizar(@PathVariable Long id, @RequestBody Usuario usuarioDetalles) {
-        return usuarioRepository.findById(id).map(usuario -> {
-            usuario.setUsername(usuarioDetalles.getUsername());
-            usuario.setEmail(usuarioDetalles.getEmail());
-            if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
-                usuario.setPassword(usuarioDetalles.getPassword());
-            }
-            if (usuarioDetalles.getRole() != null) {
-                usuario.setRole(usuarioDetalles.getRole());
-            }
-            Usuario actualizado = usuarioRepository.save(usuario);
-            return ResponseEntity.ok(actualizado);
-        }).orElse(ResponseEntity.notFound().build());
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        if (esSuperusuarioProtegido(usuario) && (
+                (usuarioDetalles.getIsActive() != null && Boolean.FALSE.equals(usuarioDetalles.getIsActive()))
+                        || (usuarioDetalles.getRole() != null && !usuario.getRole().equals(usuarioDetalles.getRole()))
+        )) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        usuario.setUsername(usuarioDetalles.getUsername());
+        usuario.setEmail(usuarioDetalles.getEmail());
+        if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
+            usuario.setPassword(usuarioDetalles.getPassword());
+        }
+        if (usuarioDetalles.getRole() != null) {
+            usuario.setRole(usuarioDetalles.getRole());
+        }
+        if (usuarioDetalles.getIsActive() != null) {
+            usuario.setIsActive(usuarioDetalles.getIsActive());
+        }
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return ResponseEntity.ok().build();
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+
+        Usuario usuario = usuarioOpt.get();
+        if (esSuperusuarioProtegido(usuario)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        usuarioRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,6 +1,8 @@
 package com.marketpro.backend.controller;
 
+import com.marketpro.backend.model.Categoria;
 import com.marketpro.backend.model.Producto;
+import com.marketpro.backend.repository.CategoriaRepository;
 import com.marketpro.backend.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,9 @@ public class ProductoController {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     @GetMapping
     public List<Producto> listarTodos() {
         return productoRepository.findAll();
@@ -30,6 +35,11 @@ public class ProductoController {
 
     @PostMapping
     public Producto crear(@RequestBody Producto producto) {
+        if (producto.getCategoria() != null && producto.getCategoria().getId() != null) {
+            Categoria categoria = categoriaRepository.findById(producto.getCategoria().getId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            producto.setCategoria(categoria);
+        }
         return productoRepository.save(producto);
     }
 
@@ -43,7 +53,11 @@ public class ProductoController {
                     p.setPrecioVenta(detalles.getPrecioVenta());
                     p.setStock(detalles.getStock());
                     p.setFechaVencimiento(detalles.getFechaVencimiento());
-                    p.setCategoria(detalles.getCategoria());
+                    if (detalles.getCategoria() != null && detalles.getCategoria().getId() != null) {
+                        Categoria categoria = categoriaRepository.findById(detalles.getCategoria().getId())
+                                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                        p.setCategoria(categoria);
+                    }
                     return ResponseEntity.ok(productoRepository.save(p));
                 })
                 .orElse(ResponseEntity.notFound().build());

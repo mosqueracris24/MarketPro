@@ -33,7 +33,24 @@ const actualizarUsuario = async (id, usuario) => {
     body: JSON.stringify(usuario),
   });
 
+  if (!response.ok) {
+    throw new Error('Error al actualizar usuario');
+  }
+
   return await response.json();
+};
+
+// ELIMINAR
+const eliminarUsuario = async (id) => {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Error al eliminar usuario');
+  }
+
+  return true;
 };
 
 // EXPORT
@@ -41,4 +58,5 @@ export default {
   obtenerUsuarios,
   crearUsuario,
   actualizarUsuario,
+  eliminarUsuario,
 };

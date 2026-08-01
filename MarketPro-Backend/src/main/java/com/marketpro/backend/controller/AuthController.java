@@ -45,7 +45,9 @@ public class AuthController {
                         "id", usuario.getId(),
                         "username", usuario.getUsername(),
                         "email", usuario.getEmail(),
-                        "role", usuario.getRole()
+                        "role", usuario.getRole(),
+                        "createdAt", usuario.getCreatedAt(),
+                        "isActive", usuario.getIsActive()
                 ));
             } else {
                 System.out.println("Log: Contraseña incorrecta para " + identificador);

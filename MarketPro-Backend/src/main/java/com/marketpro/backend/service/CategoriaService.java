@@ -2,6 +2,7 @@ package com.marketpro.backend.service;
 
 import com.marketpro.backend.model.Categoria;
 import com.marketpro.backend.repository.CategoriaRepository;
+import com.marketpro.backend.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.List;
 public class CategoriaService {
 
     private final CategoriaRepository repository;
+    private final ProductoRepository productoRepository;
 
-    public CategoriaService(CategoriaRepository repository) {
+    public CategoriaService(CategoriaRepository repository, ProductoRepository productoRepository) {
         this.repository = repository;
+        this.productoRepository = productoRepository;
     }
 
     public List<Categoria> listar() {
@@ -34,6 +37,9 @@ public class CategoriaService {
     }
 
     public void eliminar(Long id) {
+        if (productoRepository.existsByCategoriaId(id)) {
+            throw new RuntimeException("No se puede eliminar una categoría con productos asociados");
+        }
         repository.deleteById(id);
     }
 }

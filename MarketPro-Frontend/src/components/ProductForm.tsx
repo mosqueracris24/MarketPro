@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,12 +6,12 @@ import { format } from 'date-fns';
 import { Save, X, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 import Input from './ui/Input';
 import Button from './ui/Button';
-import { Product, PRODUCT_CATEGORIES } from '../types/product';
+import { Product } from '../types/product';
 
 const productSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   sku: z.string().min(1, 'El SKU es requerido'),
-  category: z.enum(PRODUCT_CATEGORIES),
+  categoryId: z.number().min(1, 'Seleccione una categoría'),
   purchasePrice: z.number().min(0),
   salePrice: z.number().min(0),
   stock: z.number().min(0),
@@ -31,6 +31,7 @@ interface Props {
 const ProductForm: React.FC<Props> = ({ product, onSubmit, onDelete, onCancel }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(product?.image || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<{ id: number; nombre: string }[]>([]);
 
   const defaultValues = product
     ? {
@@ -42,7 +43,7 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, onDelete, onCancel })
     : {
         name: '',
         sku: '',
-        category: 'Otros' as const,
+        categoryId: 0,
         purchasePrice: 0,
         salePrice: 0,
         stock: 0,
@@ -63,6 +64,23 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, onDelete, onCancel })
 
   const watchedSalePrice = watch('salePrice');
   const watchedPurchasePrice = watch('purchasePrice');
+
+  useEffect(() => {
+    const cargarCategorias = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/categorias');
+        const data = await response.json();
+        setCategories(data);
+        if (!product && data.length > 0) {
+          setValue('categoryId', data[0].id);
+        }
+      } catch (error) {
+        console.error('Error cargando categorías', error);
+      }
+    };
+
+    cargarCategorias();
+  }, [product, setValue]);
 
   const handleImageUpload = (e: any) => {
     const file = e.target.files?.[0];
@@ -117,13 +135,17 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, onDelete, onCancel })
           <div>
             <label className="text-sm font-medium">Categoría</label>
             <select
-              {...register('category')}
-              className="w-full mt-1 p-2 border rounded-md"
+              {...register('categoryId', { valueAsNumber: true })}
+              className="w-full mt-1 rounded-md border border-gray-300 bg-white p-2.5 text-sm shadow-sm focus:border-primary focus:outline-none"
             >
-              {PRODUCT_CATEGORIES.map(c => (
-                <option key={c}>{c}</option>
+              <option value={0}>Seleccione una categoría</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
+            {errors.categoryId?.message && (
+              <p className="mt-1 text-sm text-red-600">{errors.categoryId.message}</p>
+            )}
           </div>
 
           <Input

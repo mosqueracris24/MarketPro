@@ -2,7 +2,9 @@ package com.marketpro.backend.controller;
 
 import com.marketpro.backend.model.Categoria;
 import com.marketpro.backend.service.CategoriaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -38,6 +40,10 @@ public class CategoriaController {
     // 🔹 ELIMINAR
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+        try {
+            service.eliminar(id);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.getMessage());
+        }
     }
 }

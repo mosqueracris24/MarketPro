@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Save, User, Mail, Shield, Calendar } from 'lucide-react';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import Toast from '../components/ui/Toast';
 import { USER_ROLES } from '../types/user';
 
 interface ProfileProps {
@@ -34,6 +35,7 @@ const Profile: React.FC<ProfileProps> = ({
   
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -81,37 +83,56 @@ const Profile: React.FC<ProfileProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const payload: any = {
+        username: formData.username,
+        email: formData.email,
+        role: formData.role,
+      };
+
+      if (formData.newPassword) {
+        payload.password = formData.newPassword;
+      }
+
+      const response = await fetch(`http://localhost:8080/api/usuarios/${currentUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo actualizar el perfil');
+      }
+
       const updatedUser = {
         ...currentUser,
         username: formData.username,
         email: formData.email,
-        role: formData.role
+        role: formData.role,
       };
-      
+
       onUpdateProfile(updatedUser);
-      setIsLoading(false);
-      
-      // Clear password fields
       setFormData(prev => ({
         ...prev,
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       }));
-      
-      alert('Perfil actualizado exitosamente');
-    }, 1000);
+      setToast({ message: 'Perfil actualizado correctamente', type: 'success' });
+    } catch (error) {
+      setToast({ message: 'No se pudo actualizar el perfil', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -120,6 +141,7 @@ const Profile: React.FC<ProfileProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <button
         onClick={handleBack}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"

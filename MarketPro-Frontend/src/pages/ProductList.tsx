@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, PackageSearch } from 'lucide-react';
 import Button from '../components/ui/Button';
+import Toast from '../components/ui/Toast';
 import productService from '../services/productService';
 
 interface Product {
@@ -24,6 +25,7 @@ interface ProductListProps {
 const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const cargarProductos = async () => {
     try {
@@ -41,14 +43,15 @@ const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+    if (!window.confirm('¿Seguro que deseas eliminar este producto?')) return;
 
     try {
       await productService.eliminarProducto(id);
-      cargarProductos(); // 🔄 refrescar lista
+      setToast({ message: 'Producto eliminado correctamente', type: 'success' });
+      cargarProductos();
     } catch (error) {
       console.error('Error eliminando producto:', error);
-      alert('No se pudo eliminar el producto');
+      setToast({ message: 'No se pudo eliminar el producto', type: 'error' });
     }
   };
 
@@ -58,6 +61,7 @@ const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
 
   return (
     <div className="space-y-6">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Productos</h1>
@@ -125,7 +129,10 @@ const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
             ) : (
               <tr>
                 <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                  No hay productos registrados
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <PackageSearch size={24} className="text-gray-400" />
+                    <span>No hay productos registrados</span>
+                  </div>
                 </td>
               </tr>
             )}
