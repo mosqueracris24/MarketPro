@@ -61,10 +61,10 @@ Antes de ejecutar el proyecto en tu entorno local, asegúrate de tener instalado
    ```
    *(El servidor se iniciará por defecto en el puerto `http://localhost:8080`)*.
 
----
+-----
 
 ### 3. Ejecutar el Frontend (React + Vite)
-1. Abre **otra pestaña o ventana de la terminal** y navega hasta la carpeta del frontend:
+1. Abre **Otra pestaña o ventana de la terminal** y navega hasta la carpeta del frontend:
    ```bash
    cd MarketPro-Frontend
    ```
