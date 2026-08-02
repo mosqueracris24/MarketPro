@@ -25,8 +25,7 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 
-// IMPORTAMOS DATOS DE EJEMPLO Y COMPONENTES
-import { sampleProducts } from './data/products';
+// IMPORTAMOS COMPONENTES
 import Layout from './components/Layout';
 
 // IMPORTAMOS LOS SERVICIOS DE BASE DE DATOS
@@ -126,6 +125,7 @@ function App() {
   // FUNCIÓN: ACTUALIZAR PERFIL DEL USUARIO
   const handleUpdateProfile = (userData: any) => {
     setCurrentUser(userData);
+    authService.guardarSesion(userData);
     console.log('Perfil actualizado:', userData);
   };
 
@@ -162,7 +162,7 @@ function App() {
         return <Dashboard {...({ currentView, onNavigate: handleNavigate } as any)} />;
       case 'list':
         return (
-          <ProductList 
+          <ProductList
             onEdit={(id: any) => {
               setSelectedProductId(id);
               setCurrentView('edit');
@@ -175,10 +175,9 @@ function App() {
       case 'categories':
         return <Categories {...({ currentView, onNavigate: handleNavigate } as any)} />;
       case 'edit':
-        const product = sampleProducts.find(p => String(p.id) === String(selectedProductId));
         return (
-          <EditProduct 
-            product={product}
+          <EditProduct
+            productId={selectedProductId}
             {...({ onBack: () => handleNavigate('list'), currentView, onNavigate: handleNavigate } as any)}
           />
         );

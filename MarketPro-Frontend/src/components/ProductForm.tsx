@@ -35,10 +35,16 @@ const ProductForm: React.FC<Props> = ({ product, onSubmit, onDelete, onCancel })
 
   const defaultValues = product
     ? {
-        ...product,
-        expiryDate: product.expiryDate
-          ? format(new Date(product.expiryDate), 'yyyy-MM-dd')
+        name: product.nombre || product.name || '',
+        sku: product.sku || '',
+        categoryId: product.categoria?.id ?? product.categoryId ?? product.categoriaId ?? 0,
+        purchasePrice: product.precioCompra ?? product.purchasePrice ?? 0,
+        salePrice: product.precioVenta ?? product.salePrice ?? 0,
+        stock: product.stock ?? 0,
+        expiryDate: (product.fechaVencimiento || product.expiryDate)
+          ? format(new Date(product.fechaVencimiento || product.expiryDate), 'yyyy-MM-dd')
           : null,
+        image: product.image || '',
       }
     : {
         name: '',

@@ -84,14 +84,19 @@ const Categories: React.FC = () => {
   };
 
   const eliminarCategoria = async (id: number) => {
-    const confirmar = window.confirm('¿Deseas eliminar esta categoría?');
+    const confirmar = window.confirm('¿Deseas eliminar esta categoría? Solo será posible si no tiene productos asociados.');
     if (!confirmar) return;
 
     try {
       const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || 'No se puede eliminar la categoría');
+        const mensaje = errorData.message || 'No se pudo eliminar la categoría';
+        throw new Error(
+          mensaje.includes('producto') || mensaje.includes('productos')
+            ? 'No se puede eliminar la categoría porque tiene productos asociados.'
+            : mensaje
+        );
       }
       mostrarToast('Categoría eliminada correctamente', 'success');
       await cargarCategorias();

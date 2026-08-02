@@ -16,7 +16,9 @@ const productService = {
       precioCompra: producto.precioCompra,
       precioVenta: producto.precioVenta,
       fechaVencimiento: producto.fechaVencimiento || null,
-      categoriaId: producto.categoriaId,
+      categoria: {
+        id: producto.categoriaId ?? producto.categoria?.id,
+      },
     };
 
     const response = await axios.post(API_URL, payload);
@@ -40,7 +42,9 @@ const productService = {
       precioCompra: producto.precioCompra,
       precioVenta: producto.precioVenta,
       fechaVencimiento: producto.fechaVencimiento || null,
-      categoriaId: producto.categoriaId,
+      categoria: {
+        id: producto.categoriaId ?? producto.categoria?.id,
+      },
     };
 
     const response = await axios.put(`${API_URL}/${id}`, payload);

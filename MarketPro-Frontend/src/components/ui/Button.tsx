@@ -68,7 +68,7 @@ const Button: React.FC<ButtonProps> = ({
   
   // CLASES CSS BASE
   // Estas son las clases que todos los botones tendrán
-  const baseClasses = 'font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap';
   
   // CLASES SEGÚN LA VARIANTE
   // Cada tipo de botón tiene colores diferentes

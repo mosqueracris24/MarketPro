@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,14 +42,18 @@ public class AuthController {
             // Validamos con BCrypt
             if (passwordEncoder.matches(password, usuario.getPassword())) {
                 System.out.println("Log: Login exitoso para " + identificador);
-                return ResponseEntity.ok(Map.of(
-                        "id", usuario.getId(),
-                        "username", usuario.getUsername(),
-                        "email", usuario.getEmail(),
-                        "role", usuario.getRole(),
-                        "createdAt", usuario.getCreatedAt(),
-                        "isActive", usuario.getIsActive()
-                ));
+                Map<String, Object> response = new LinkedHashMap<>();
+                response.put("id", usuario.getId());
+                response.put("username", usuario.getUsername());
+                response.put("email", usuario.getEmail());
+                response.put("role", usuario.getRole());
+                if (usuario.getCreatedAt() != null) {
+                    response.put("createdAt", usuario.getCreatedAt());
+                }
+                if (usuario.getIsActive() != null) {
+                    response.put("isActive", usuario.getIsActive());
+                }
+                return ResponseEntity.ok(response);
             } else {
                 System.out.println("Log: Contraseña incorrecta para " + identificador);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

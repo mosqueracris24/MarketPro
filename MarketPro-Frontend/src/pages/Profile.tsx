@@ -3,6 +3,7 @@ import { ArrowLeft, Save, User, Mail, Shield, Calendar } from 'lucide-react';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Toast from '../components/ui/Toast';
+import authService from '../services/authService';
 import { USER_ROLES } from '../types/user';
 
 interface ProfileProps {
@@ -120,6 +121,7 @@ const Profile: React.FC<ProfileProps> = ({
         role: formData.role,
       };
 
+      authService.guardarSesion(updatedUser);
       onUpdateProfile(updatedUser);
       setFormData(prev => ({
         ...prev,
@@ -138,6 +140,15 @@ const Profile: React.FC<ProfileProps> = ({
   const handleBack = () => {
     onNavigate('dashboard');
   };
+
+  const createdAtDate = currentUser.createdAt ? new Date(currentUser.createdAt) : null;
+  const formattedCreatedAt = createdAtDate && !Number.isNaN(createdAtDate.getTime())
+    ? createdAtDate.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : 'No disponible';
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -241,11 +252,7 @@ const Profile: React.FC<ProfileProps> = ({
                 <div className="flex items-center gap-2 py-2 px-4 border border-gray-300 rounded-md bg-gray-100">
                   <Calendar size={18} className="text-gray-400" />
                   <span className="text-gray-500">
-                    {currentUser.createdAt.toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+                    {formattedCreatedAt}
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">Este campo no se puede modificar</p>

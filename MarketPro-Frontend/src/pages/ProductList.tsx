@@ -20,9 +20,10 @@ interface Product {
 
 interface ProductListProps {
   onNavigate: (view: string) => void;
+  onEdit?: (id: number) => void;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
+const ProductList: React.FC<ProductListProps> = ({ onNavigate, onEdit }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -111,18 +112,22 @@ const ProductList: React.FC<ProductListProps> = ({ onNavigate }) => {
                   </td>
 
                   <td className="px-6 py-4 text-right space-x-2">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit?.(product.id)}
                       className="text-primary hover:text-primary/80"
-                      onClick={() => onNavigate(`edit-${product.id}`)}
                     >
-                      <Edit size={18} />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800"
+                      <Edit size={16} /> Editar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDelete(product.id)}
+                      className="text-red-600 hover:text-red-800"
                     >
-                      <Trash2 size={18} />
-                    </button>
+                      <Trash2 size={16} /> Eliminar
+                    </Button>
                   </td>
                 </tr>
               ))

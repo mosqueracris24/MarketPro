@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ProductForm from '../components/ProductForm';
 import Toast from '../components/ui/Toast';
+import productService from '../services/productService';
 
 interface CreateProductProps {
   onNavigate: (view: string) => void;
@@ -22,29 +23,19 @@ export default function CreateProduct({ onNavigate }: CreateProductProps) {
         precioVenta: data.salePrice,
         stock: data.stock,
         fechaVencimiento: data.expiryDate || null,
-        categoria: {
-          id: data.categoryId
-        }
+        categoriaId: data.categoryId,
       };
 
-      const response = await fetch('http://localhost:8080/api/productos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productoBackend)
-      });
+      await productService.crearProducto(productoBackend);
 
-      if (!response.ok) {
-        throw new Error('Error al guardar en el servidor');
-      }
-
-      mostrarToast('¡Producto creado exitosamente!', 'success');
+      mostrarToast('Producto guardado correctamente', 'success');
       setTimeout(() => {
         onNavigate('list');
       }, 1200);
 
     } catch (error) {
       console.error(error);
-      mostrarToast('Error al guardar el producto. Intente nuevamente.', 'error');
+      mostrarToast('No se pudo guardar el producto. Intente nuevamente.', 'error');
     }
   };
 
